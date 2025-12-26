@@ -17,6 +17,8 @@
 
         private void InitializeComponent()
         {
+            
+
             tableLayoutPanelMain = new();
             pictureBoxPhoto_KAE = new();
             labelInfo_KAE = new();

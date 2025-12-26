@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tyuiu.KoryakinaAE.Sprint7.Project.V12.Lib;
 
@@ -26,6 +24,55 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
 
             dataGridViewComputers_KAE.AutoGenerateColumns = true;
             dataGridViewComputers_KAE.DataSource = bindingSource_KAE;
+
+            ApplyIcons(); // Загрузка иконок для кнопок и меню
+        }
+
+        // ===== ICONS =====
+        private void ApplyIcons()
+        {
+            // Иконки для кнопок ToolStrip
+            foreach (ToolStripItem item in toolStripMain_KAE.Items)
+            {
+                if (item is not ToolStripButton btn) continue;
+
+                btn.Image = btn.Text switch
+                {
+                    "Добавить" => LoadIcon("add.png"),
+                    "Изменить" => LoadIcon("edit.png"),
+                    "Удалить" => LoadIcon("delete.png"),
+                    "Статистика" => LoadIcon("stats.png"),
+                    "График" => LoadIcon("chart.png"),
+                    _ => null
+                };
+
+                btn.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                btn.TextImageRelation = TextImageRelation.ImageBeforeText;
+                btn.ImageAlign = ContentAlignment.MiddleLeft;
+                btn.TextAlign = ContentAlignment.MiddleCenter;
+                btn.AutoSize = false;
+                btn.Size = new Size(120, 38);
+                btn.Padding = new Padding(6, 0, 6, 0);
+            }
+
+            // Иконки для пунктов меню
+            toolStripMenuItemOpenCsv_KAE.Image = LoadIcon("open.png");
+            toolStripMenuItemOpenFolder_KAE.Image = LoadIcon("folder.png");
+            toolStripMenuItemSaveCsv_KAE.Image = LoadIcon("save.png");
+            toolStripMenuItemExit_KAE.Image = LoadIcon("exit.png");
+            toolStripMenuItemUserGuide_KAE.Image = LoadIcon("help.png");
+            toolStripMenuItemAbout_KAE.Image = LoadIcon("about.png");
+        }
+
+        private Image LoadIcon(string fileName)
+        {
+            string path = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Icons",
+                fileName
+            );
+
+            return File.Exists(path) ? Image.FromFile(path) : null;
         }
 
         // ===== FILE =====
@@ -155,13 +202,20 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
         // ===== HELP =====
         private void UserGuide_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Руководство пользователя");
+            // Создаём форму справки
+            using FormUserGuide guideForm = new FormUserGuide();
+            guideForm.ShowDialog(); // показываем модально
         }
 
         private void About_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Персональные ЭВМ\nВариант 11");
+            // Создаём форму "О программе"
+            using FormAbout aboutForm = new FormAbout();
+            aboutForm.ShowDialog(); // показываем модально
         }
+
+       
+
         // ===== STATISTICS =====
         private void Statistics_Click(object sender, EventArgs e)
         {
@@ -186,6 +240,11 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
 
             FormChart formChart = new FormChart(table_KAE);
             formChart.ShowDialog();
+        }
+
+        private void toolStripMenuItemHelp_KAE_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

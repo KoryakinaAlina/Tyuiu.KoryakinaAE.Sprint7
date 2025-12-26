@@ -25,8 +25,8 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
             {
                 string path = Path.Combine(
                     AppDomain.CurrentDomain.BaseDirectory,
-                    "Images",
-                    "author.jpg");
+                    "Icons",
+                    "bell.png");
 
                 if (File.Exists(path))
                 {
