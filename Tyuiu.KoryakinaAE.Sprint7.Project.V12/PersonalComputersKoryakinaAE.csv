@@ -1,0 +1,9 @@
+ID;Manufacturer;Processor;ClockGHz;RAM_GB;HDD_GB;ReleaseDate;Seller
+1;HP;Intel Core i5;3.2;8;512;2021-05-12;DNS
+2;Dell;Intel Core i7;3.8;16;1024;2022-03-18;Citilink
+3;Lenovo;AMD Ryzen 5;3.6;16;512;2020-11-05;MVideo
+4;Asus;Intel Core i3;3.0;4;256;2019-07-21;DNS
+5;Acer;AMD Ryzen 7;4.0;32;2048;2023-01-10;Citilink
+6;HP;Intel Core i9;5.0;64;2048;2023-09-02;MVideo
+7;MSI;AMD Ryzen 9;4.5;32;1024;2022-12-15;DNS
+
