@@ -11,19 +11,20 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
 {
     public partial class FormMain : Form
     {
-        private readonly DataService dataService_KAE = new();
-        private readonly BindingSource bindingSource_KAE = new();
-        private DataTable table_KAE = new();
-        private readonly Dictionary<string, string> csvFiles_KAE = new();
+        private readonly DataService dataService_KAE = new(); // слой, отвечающий за CSV и работу с файлами
+        private readonly BindingSource bindingSource_KAE = new(); // посредник между datatable и datagridviev, чтобы грид автоматически обновялся при изменении данных
+        private DataTable table_KAE = new(); // основная таблица данных, хранящая содержимое CSV в памяти
+        private readonly Dictionary<string, string> csvFiles_KAE = new(); // словать отображаемого имени пути к CSV, нужен для переключения между файлами
         private string currentPath_KAE = string.Empty;
         private bool isEditMode_KAE = false;
 
         public FormMain()
         {
-            InitializeComponent();
+            InitializeComponent(); //создание элемента интерфейса
 
-            dataGridViewComputers_KAE.AutoGenerateColumns = true;
-            dataGridViewComputers_KAE.DataSource = bindingSource_KAE;
+            dataGridViewComputers_KAE.AutoGenerateColumns = true; //грид автоматически создает колонки
+            dataGridViewComputers_KAE.DataSource = bindingSource_KAE; //привязали к изменению данных
+            
 
             ApplyIcons(); // Загрузка иконок для кнопок и меню
         }
@@ -46,11 +47,11 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
                     _ => null
                 };
 
-                btn.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-                btn.TextImageRelation = TextImageRelation.ImageBeforeText;
-                btn.ImageAlign = ContentAlignment.MiddleLeft;
+                btn.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;//отображаем иконки и текст
+                btn.TextImageRelation = TextImageRelation.ImageBeforeText; //иконки до текста
+                btn.ImageAlign = ContentAlignment.MiddleLeft; //выравнивание текста и кнопок
                 btn.TextAlign = ContentAlignment.MiddleCenter;
-                btn.AutoSize = false;
+                btn.AutoSize = false; //фиксированный размер кнопок
                 btn.Size = new Size(120, 38);
                 btn.Padding = new Padding(6, 0, 6, 0);
             }
@@ -66,24 +67,24 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
 
         private Image LoadIcon(string fileName)
         {
-            string path = Path.Combine(
+            string path = Path.Combine( //формируем путь папка запуска + иконки + имя файла
                 AppDomain.CurrentDomain.BaseDirectory,
                 "Icons",
                 fileName
             );
-
+            //если файл есь загружаем иначе 0
             return File.Exists(path) ? Image.FromFile(path) : null;
         }
 
         // ===== FILE =====
         private void OpenCsv_Click(object sender, EventArgs e)
         {
-            using OpenFileDialog dlg = new()
+            using OpenFileDialog dlg = new() //диалог выбора файла
             {
                 Filter = "CSV files (*.csv)|*.csv"
             };
 
-            if (dlg.ShowDialog() != DialogResult.OK) return;
+            if (dlg.ShowDialog() != DialogResult.OK) return; //отмена
 
             LoadTable(dlg.FileName);
         }
@@ -93,7 +94,7 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
             using FolderBrowserDialog dlg = new();
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            csvFiles_KAE.Clear();
+            csvFiles_KAE.Clear(); // очистка предыдущи значений
             toolStripComboBoxTables_KAE.Items.Clear();
 
             foreach (var file in Directory.GetFiles(dlg.SelectedPath, "*.csv"))
@@ -109,14 +110,14 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
 
         private void SaveCsv_Click(object sender, EventArgs e)
         {
-            if (table_KAE.Rows.Count == 0) return;
+            if (table_KAE.Rows.Count == 0) return; //таблица пцстая ничего не сохраняем
 
-            using SaveFileDialog dlg = new()
+            using SaveFileDialog dlg = new() //диалог сохранения
             {
-                Filter = "CSV files (*.csv)|*.csv"
+                Filter = "CSV files (*.csv)|*.csv" //сохр только csv
             };
 
-            if (dlg.ShowDialog() != DialogResult.OK) return;
+            if (dlg.ShowDialog() != DialogResult.OK) return; //отмена
 
             dataService_KAE.SaveCsv(table_KAE, dlg.FileName);
         }
@@ -171,23 +172,24 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
         private void Search_TextChanged(object sender, EventArgs e)
         {
             string text = toolStripTextBoxSearch_KAE.Text.Trim();
+            //строка пустая сбрасываем фильтр
             if (string.IsNullOrEmpty(text))
             {
                 table_KAE.DefaultView.RowFilter = "";
                 return;
             }
-
+            // формирование фильтра, поиска по текстовым колонкам
             var filters = table_KAE.Columns
                 .Cast<DataColumn>()
                 .Select(c => $"[{c.ColumnName}] LIKE '%{text.Replace("'", "''")}%'");
-
+            // применение фильтра
             table_KAE.DefaultView.RowFilter = string.Join(" OR ", filters);
         }
 
         private void ClearSearch_Click(object sender, EventArgs e)
         {
-            toolStripTextBoxSearch_KAE.Text = "";
-            table_KAE.DefaultView.RowFilter = "";
+            toolStripTextBoxSearch_KAE.Text = ""; //очистка поля
+            table_KAE.DefaultView.RowFilter = ""; //применить фильтры
         }
 
         private void Tables_SelectedIndexChanged(object sender, EventArgs e)

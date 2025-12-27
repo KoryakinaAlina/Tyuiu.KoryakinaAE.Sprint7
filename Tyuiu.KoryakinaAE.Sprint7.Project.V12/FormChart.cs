@@ -11,8 +11,8 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
     {
         private sealed class StatItem
         {
-            public string Name { get; init; } = "—";
-            public int Count { get; init; }
+            public string Name { get; init; } = "—"; //название группы
+            public int Count { get; init; } //кол-во
             public double AvgRam { get; init; }
             public double AvgPrice { get; init; }
         }
@@ -23,18 +23,20 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
         private readonly Panel panelBottomLeft = new Panel();
         private readonly Panel panelBottomRight = new Panel();
 
+        //к каждой панели по графику
+
         private readonly List<StatItem> byFirmRam;
         private readonly List<StatItem> byFirmCount;
         private readonly List<StatItem> byFirmPrice;
         private readonly List<StatItem> byProcessorCount;
 
-        public FormChart(DataTable table)
+        public FormChart(DataTable table) // получаем данные из таблицы
         {
             InitializeComponent();
 
             Text = "Аналитика персональных ЭВМ";
             WindowState = FormWindowState.Maximized;
-            BackColor = Color.White;
+            BackColor = Color.Blue;
             DoubleBuffered = true;
 
             // Построение статистики
@@ -44,8 +46,9 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
             byProcessorCount = BuildStatistics(table, "Процессор", null, countMode: true);
 
             // Настройка панели TopLeft
-            panelTopLeft.Dock = DockStyle.Top;
+            panelTopLeft.Dock = DockStyle.Top; //панель прижимается кверху
             panelTopLeft.Height = ClientSize.Height / 2;
+            //при перерисовке панели рисуется график
             panelTopLeft.Paint += (s, e) => DrawBarChart(e.Graphics, byFirmRam, panelTopLeft.ClientRectangle, "Средний ОЗУ по фирмам", x => x.AvgRam, "{0:N1} GB");
 
             // Настройка панели TopRight
@@ -75,10 +78,10 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
 
         private static List<StatItem> BuildStatistics(DataTable table, string groupColumn, string valueColumn, bool countMode = false, bool priceMode = false)
         {
-            if (!table.Columns.Contains(groupColumn)) return new List<StatItem>();
+            if (!table.Columns.Contains(groupColumn)) return new List<StatItem>(); //если колонок нет пустой список
 
             var groups = table.AsEnumerable()
-                              .GroupBy(r => r[groupColumn]?.ToString() ?? "—");
+                              .GroupBy(r => r[groupColumn]?.ToString() ?? "—"); //группировка строк по значению колонки
 
             var result = new List<StatItem>();
 
@@ -96,7 +99,7 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
                     avgValue = values.Any() ? values.Average() : 0;
                 }
 
-                result.Add(new StatItem
+                result.Add(new StatItem //создаем объект статистики
                 {
                     Name = g.Key,
                     Count = g.Count(),
@@ -105,9 +108,9 @@ namespace Tyuiu.KoryakinaAE.Sprint7.Project.V12
                 });
             }
 
-            return result.OrderByDescending(x => countMode ? x.Count : (priceMode ? x.AvgPrice : x.AvgRam)).ToList();
+            return result.OrderByDescending(x => countMode ? x.Count : (priceMode ? x.AvgPrice : x.AvgRam)).ToList(); //сортировки
         }
-
+        //рисуем диаграмму
         private void DrawBarChart(Graphics g, List<StatItem> stats, Rectangle rect, string title, Func<StatItem, double> valueSelector, string format)
         {
             g.Clear(Color.White);
